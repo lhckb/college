@@ -16,12 +16,13 @@ int main()
   int smallest_idx;
 
   for (int i = 0; i < size; i++) {
+    smallest_idx = i;
     for (int j = i+1; j < size; j++) {
-      smallest_idx = i;
       if (nums[j] > nums[smallest_idx]) {
-        swapElements(nums, smallest_idx, j);
+        smallest_idx = j;
       }
     }
+    swapElements(nums, smallest_idx, i);
   }
 
   for (int x = 0; x < size; x++) {
