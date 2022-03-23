@@ -5,10 +5,13 @@ class Parent:
 
 class Child(Parent):
 
-  # a classe child apenas estende a classe parent
-  # não foi definido nenhum atributo, a child apenas herdou os atributos
-  # usamos a palavra chave "pass" para o python seguir em frente
-  pass
+  iAm ='the bluest of blues'
 
 print(Parent.whatami)
 print(Child.whatami)
+
+print(Child.iAm)
+
+# atributo dado a classe filha além das heranças
+# não existe na classe pai
+print(Parent.iAm)

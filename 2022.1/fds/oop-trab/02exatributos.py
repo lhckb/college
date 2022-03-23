@@ -22,3 +22,9 @@ lastObj = Example()
 print(newObj.name)
 print(anotherObj.name)
 print(lastObj.name)
+
+walter = Example2('heisenberg')
+jesse = Example2('pinkman')
+
+print(walter.name)
+print(jesse.name)

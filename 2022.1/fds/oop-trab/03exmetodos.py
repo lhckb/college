@@ -8,3 +8,10 @@ print(str)
 str = str.upper()
 
 print(str)
+
+class Utils:
+    # classe utils não tem atributos, não tem um tipo de dado específico
+    # método não manipula objetos do tipo Utils
+    
+    def sum(num1, num2):
+        return num1 + num2
