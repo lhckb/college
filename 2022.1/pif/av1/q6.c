@@ -140,10 +140,10 @@ int vender(Produto *head, int codigo)
 }
 
 // geração de relatórios...
-void listaMaisVendidos();
-void listaMaisComprados();
-void extratoPadaria();
-void listaProdutosEstoque();
+void listaMaisVendidos(); // sorting out of place?
+void listaMaisComprados(); 
+void extratoPadaria(); // imprimir saldo da padaria
+void listaProdutosEstoque(); // listar produtos cuja quantidade > 0
 
 int main()
 {
