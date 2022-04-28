@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define limite 1000
+
 float saldo_padaria = 0;
+int qtd_produtos = 0;
 
 // estrutura basica
 struct Produto{
@@ -12,155 +15,123 @@ struct Produto{
   int num_compras;
   float preco;
   int status;
-
-  struct Produto *next;
-  struct Produto *prev;
 };
 typedef struct Produto Produto;
 
-Produto* buscar(Produto *head, int codigo)
+int buscar(Produto lista[], int codigo)
 {
-  for (Produto *curr = head->next; curr != NULL; curr = curr->next) {
-    if (curr->codigo == codigo) {
-      return curr;
+  for (int i = 0; i < qtd_produtos; i++) {
+    if (lista[i].codigo == codigo) {
+      return i;
     }
   }
 
-  return NULL;
+  return -1;
 }
 
-void printProdutos(Produto *head) 
+void printProdutos(Produto lista[]) 
 {
-  // printf("\n\n");
-
-  for (Produto *curr = head->next; curr != NULL; curr = curr->next) {
-    printf("nome: %s\n", curr->nome);
-    printf("codigo: %i\n", curr->codigo);
-    printf("quantidade disponivel: %i\n", curr->quantidade_disponivel);
-    printf("num compras: %i\n", curr->num_compras);
-    printf("num vendas: %i\n", curr->num_vendas);
-    printf("preço: R$%.2f\n", curr->preco);
+  for (int i = 0; i< qtd_produtos; i++) {
+    printf("nome: %s\n", lista[i].nome);
+    printf("codigo: %i\n", lista[i].codigo);
+    printf("quantidade disponivel: %i\n", lista[i].quantidade_disponivel);
+    printf("num compras: %i\n", lista[i].num_compras);
+    printf("num vendas: %i\n", lista[i].num_vendas);
+    printf("preço: R$%.2f\n", lista[i].preco);
     printf("\n");
   }
 
   printf("\n\n");
 }
 
-void printProduto(Produto *produto)
+void printProduto(Produto produto)
 {
-  printf("nome: %s\n", produto->nome);
-  printf("codigo: %i\n", produto->codigo);
-  printf("quantidade disponivel: %i\n", produto->quantidade_disponivel);
-  printf("num compras: %i\n", produto->num_compras);
-  printf("num vendas: %i\n", produto->num_vendas);
-  printf("preço: R$%.2f\n", produto->preco);
-}
-
-int obterTamanhoLista(Produto *head)
-{
-  int count = 0;
-  for (Produto *curr = head->next; curr != NULL; curr = curr->next) {
-    count++;
-  }
-
-  return count;
+  printf("nome: %s\n", produto.nome);
+  printf("codigo: %i\n", produto.codigo);
+  printf("quantidade disponivel: %i\n", produto.quantidade_disponivel);
+  printf("num compras: %i\n", produto.num_compras);
+  printf("num vendas: %i\n", produto.num_vendas);
+  printf("preço: R$%.2f\n", produto.preco);
 }
 
 // operações...
-int inserir(Produto *head)
+int inserir(Produto lista[])
 {
-  Produto *newProduct = (Produto *) malloc(sizeof(Produto));
+  Produto newProduct;
 
   printf("nome do produto: ");
-  scanf(" %[^\n]", newProduct->nome);
+  scanf(" %[^\n]", newProduct.nome);
   printf("código do produto: ");
-  scanf("%i", &newProduct->codigo);
+  scanf("%i", &newProduct.codigo);
 
-  if (buscar(head, newProduct->codigo)) {
-    free(newProduct);
+  int check = buscar(lista, newProduct.codigo);
+
+  if (lista[check].codigo == newProduct.codigo) {
     printf("NÃO PODE TER DOIS PRODUTOS COM O MESMO CÓDIGO!!!\n");
     return 0;
   }
 
   printf("preço do produto: ");
-  scanf("%f", &newProduct->preco);
+  scanf("%f", &newProduct.preco);
 
-  newProduct->quantidade_disponivel = 0;
-  newProduct->num_compras = 0;
-  newProduct->num_vendas = 0;
-  newProduct->status = 1;
+  newProduct.quantidade_disponivel = 0;
+  newProduct.num_compras = 0;
+  newProduct.num_vendas = 0;
+  newProduct.status = 1;
 
-  if (head->next == NULL) {
-    head->next = newProduct;
-    newProduct->next = NULL;
-    newProduct->prev = head;
-  }
-  else if (head->next->next == NULL) {
-    head->next->next = newProduct;
-    newProduct->next = NULL;
-    newProduct->prev = head->next;
-  }
-  else {
-    for (Produto *curr = head->next; curr != NULL; curr = curr->next) {
-      if (curr->next->next == NULL) {
-        curr->next->next = newProduct;
-        newProduct->next == NULL;
-        newProduct->prev = curr->next;
-        
-        return 1;
-      }
-    } 
-  }
+  lista[qtd_produtos] = newProduct;
+  qtd_produtos++;
+
+  return 1;
 } 
 
-int remover(Produto *head, int codigo)
+int remover(Produto lista[], int codigo)
 {
-  Produto *produto = buscar(head, codigo);
-  if (!produto) {
-    return 0;
-  }
-  else {
-    produto->prev->next = produto->next;
-    free(produto);
-    return 1;
+  int check = buscar(lista, codigo);
+  
+  if (lista[check].codigo == codigo) {
+    for (int i = check; i < qtd_produtos; i++) {
+      lista[i] = lista[i+1];
+    }
+
+    qtd_produtos--;
   }
 }
 
-int comprar(Produto *head, int codigo)
+int comprar(Produto lista[], int codigo)
 {
-  Produto *produto = buscar(head, codigo);
-  if (produto) {
+  int check = buscar(lista, codigo);
+  if (check != -1) {
     int qtd;
     printf("quantas unidades comprar? ");
     scanf("%i", &qtd);
 
-    produto->num_compras ++;
-    produto->quantidade_disponivel += qtd;
-    saldo_padaria -= produto->preco * qtd;
+    lista[check].num_compras++;
+    lista[check].quantidade_disponivel += qtd;
+    saldo_padaria -= lista[check].preco * qtd;
 
     return 1;
   }
 
   return 0;
 }
-int vender(Produto *head, int codigo)
+
+int vender(Produto lista[], int codigo)
 {
-  Produto *produto = buscar(head, codigo);
-  int count = produto->num_vendas;
-  if (produto) {
+  int check = buscar(lista, codigo);
+  if (check != -1) {
     int qtd;
     printf("quantas unidades vender? ");
     scanf("%i", &qtd);
 
-    if (qtd > produto->quantidade_disponivel) {
+    if (qtd > lista[check].quantidade_disponivel) {
       printf("NÃO É POSSÍVEL VENDER QUANTIDADE SUPERIOR AO ESTOQUE!!!\n");
       return 0;
     }
 
-    count++;
-    produto->num_vendas = count;
-    produto->quantidade_disponivel -= qtd;
-    saldo_padaria += produto->preco * qtd;
+    lista[check].num_vendas++;
+    lista[check].quantidade_disponivel -= qtd;
+    saldo_padaria += lista[check].preco * qtd;
 
     return 1;
   }
@@ -169,42 +140,49 @@ int vender(Produto *head, int codigo)
 }
 
 // geração de relatórios...
-void listaMaisVendidos(Produto *head)
+void listaMaisVendidos(Produto lista[])
 {
-  int size = obterTamanhoLista(head);
-
-  for (int i = 0; i < size - 1; i++) {
-    for (Produto *curr = head->next; curr->next != NULL; curr = curr->next) {
-      if (curr->num_vendas < curr->next->num_vendas) {
-        Produto *prox_atual = curr->next;
-        Produto *ant_atual = curr->prev;
-
-        ant_atual->next = prox_atual; 
-        prox_atual->prev = ant_atual;
-
-        curr->prev = prox_atual;
-        curr->next = prox_atual->next; 
-        prox_atual->next = curr;  
+  for (int i = 0; i < qtd_produtos - 1; i++) {
+    for (int j = 0; j < qtd_produtos - 1; j++) {
+      if (lista[j].num_vendas < lista[j + 1].num_vendas) {
+        Produto temp = lista[j];
+        lista[j] = lista[j + 1];
+        lista[j + 1] = temp;
       }
     }
   }
 
   printf("\n-----PRODUTOS MAIS VENDIDOS-----\n");
-  printProdutos(head);
+  printProdutos(lista);
 }
-void listaMaisComprados(); 
+
+void listaMaisComprados(Produto lista[])
+{
+  for (int i = 0; i < qtd_produtos - 1; i++) {
+    for (int j = 0; j < qtd_produtos - 1; j++) {
+      if (lista[j].num_compras < lista[j + 1].num_compras) {
+        Produto temp = lista[j];
+        lista[j] = lista[j + 1];
+        lista[j + 1] = temp;
+      }
+    }
+  }
+
+  printf("\n-----PRODUTOS MAIS COMPRADOS-----\n");
+  printProdutos(lista);
+} 
 
 void extratoPadaria()
 {
   printf("a padaria tem R$%.2f no banco\n", saldo_padaria);
 }
 
-void listaProdutosEstoque(Produto *head)
+void listaProdutosEstoque(Produto lista[])
 {
   printf("\n-----PRODUTOS EM ESTOQUE-----\n");
-  for (Produto *curr = head->next; curr != NULL; curr = curr->next) {
-    if (curr->quantidade_disponivel > 0) {
-      printProduto(curr);
+  for (int i = 0; i < qtd_produtos; i++) {
+    if (lista[i].quantidade_disponivel > 0) {
+      printProduto(lista[i]);
     }
   }
 }
@@ -212,56 +190,55 @@ void listaProdutosEstoque(Produto *head)
 int main()
 {
   int cond = 1;
-  
-  Produto *head = (Produto *) malloc(sizeof(Produto));
-  head->next = NULL;
-  head->prev = NULL;
+  Produto produtos[limite];
 
   int choice;
   do {
-    printProdutos(head);
-
-    printf("1- inserir\n2- remover\n3- buscar\n4- comprar\n5- vender\n6- lista dos mais vendidos\n7- lista dos mais comprados\n8- extrato da conta\n9- produtos em estoque\n");
+    printf("1- inserir\n2- remover\n3- buscar\n4- comprar\n5- vender\n6- lista dos mais vendidos\n7- lista dos mais comprados\n8- extrato da conta\n9- produtos em estoque\n10- listar todos os produtos\n");
     scanf("%i", &choice);
 
     int codigo;
     switch (choice) {
       case 1:
-        inserir(head);
+        inserir(produtos);
         break;
 
       case 2:
         printf("codigo do produto a remover: ");
         scanf("%i", &codigo);
 
-        remover(head, codigo);
+        remover(produtos, codigo);
         break;
 
       case 3:
         printf("codigo do produto a buscar: ");
         scanf("%i", &codigo);
 
-        Produto *busca = buscar(head, codigo);
+        int check = buscar(produtos, codigo);
         printf("\n-----PRODUTO BUSCADO-----\n");
-        printProduto(busca);
+        printProduto(produtos[check]);
         break;
 
       case 4: 
         printf("codigo do produto a comprar: ");
         scanf("%i", &codigo);
 
-        comprar(head, codigo);
+        comprar(produtos, codigo);
         break;
 
       case 5:
         printf("codigo do produto a vender: ");
         scanf("%i", &codigo);
 
-        vender(head, codigo);
+        vender(produtos, codigo);
         break;
 
       case 6:
-        listaMaisVendidos(head);
+        listaMaisVendidos(produtos);
+        break;
+
+      case 7:
+        listaMaisComprados(produtos);
         break;
 
       case 8:
@@ -269,7 +246,11 @@ int main()
         break;
 
       case 9:
-        listaProdutosEstoque(head);
+        listaProdutosEstoque(produtos);
+        break;
+
+      case 10:
+        printProdutos(produtos);
         break;
 
       default:
