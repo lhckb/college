@@ -9,7 +9,8 @@ int portal_l, portal_c;
 int will_l, will_c;
 int demodog_coords[4][2];
 int new_demodogs[2][2];
-  int is_will_ok = 0, is_over = 0;
+int is_will_ok = 0, is_over = 0, got_him = 0;
+int randexit_l, randexit_c;
 
 void clearBoard(int size, char board[size][size])
 {
@@ -95,11 +96,11 @@ int demodogEncounter(int el_l, int el_c)
 
 void playUpsidedown()
 {
+  char move;
   do {
-    char move;
     printBoard(10, upsidedown);
     printf("vida: %i\n", vida);
-    printf("O- obstáculo\nP- panquecas\nW-will\nS- saída\n");
+    printf("A- árvores / X- carros / C- casas abandonadas\nP- panquecas\nW-will\nS- saída\n");
     printf("movimento: \n");
     scanf("%c", &move);
 
@@ -115,6 +116,7 @@ void playUpsidedown()
           }
           if (upsidedown[eleven_l - 1][eleven_c] == 'W') {
             is_will_ok = 1;
+            got_him = 1;
           }
           if (upsidedown[eleven_l - 1][eleven_c] == 'S') {
             is_over = 1;
@@ -136,6 +138,7 @@ void playUpsidedown()
           }
           if (upsidedown[eleven_l + 1][eleven_c] == 'W') {
             is_will_ok = 1;
+            got_him = 1;
           }
           if (upsidedown[eleven_l + 1][eleven_c] == 'S') {
             is_over = 1;
@@ -157,6 +160,7 @@ void playUpsidedown()
           }
           if (upsidedown[eleven_l][eleven_c - 1] == 'W') {
             is_will_ok = 1;
+            got_him = 1;
           }
           if (upsidedown[eleven_l][eleven_c - 1] == 'S') {
             is_over = 1;
@@ -178,6 +182,7 @@ void playUpsidedown()
           }
           if (upsidedown[eleven_l][eleven_c + 1] == 'W') {
             is_will_ok = 1;
+            got_him = 1;
           }
           if (upsidedown[eleven_l][eleven_c + 1] == 'S') {
             is_over = 1;
@@ -209,22 +214,21 @@ void playUpsidedown()
       }
     }
 
-    int rand_l, rand_c;
-    if (is_will_ok) {
+    if (is_will_ok == 1 && got_him == 1) {
       int cond = 1;
       do {
         srand(time(NULL));
-        rand_l = rand()%10;
-        rand_c = rand()%10;
-        if (upsidedown[rand_l][rand_c] == '_') {
-          upsidedown[rand_l][rand_c] = 'S';
+        randexit_l = rand()%10;
+        randexit_c = rand()%10;
+        if (upsidedown[randexit_l][randexit_c] == '_') {
+          upsidedown[randexit_l][randexit_c] = 'S';
           cond = 0;
         }
       } while (cond);
 
       is_will_ok = 0;
     }
-    else {
+    else if (is_will_ok == 0 && got_him == 0) {
       moveWill();
     }
 
@@ -238,6 +242,7 @@ void startUpsideDown()
 {
   printf("AGUARDE ENQUANTO O JOGO CARREGA (é sério)\n");
   int rand_l, rand_c;
+  int amount = 0;
   for (int i = 0; i < 20; i++) {
   int count = 0;
     do {
@@ -245,7 +250,18 @@ void startUpsideDown()
       rand_l = rand()%10;
       rand_c = rand()%10;
       if (upsidedown[rand_l][rand_c] == '_') {
-        upsidedown[rand_l][rand_c] = 'O';
+        if (amount < 10) {
+          upsidedown[rand_l][rand_c] = 'A';
+          amount++;
+        }
+        else if (amount < 15) {
+          upsidedown[rand_l][rand_c] = 'X';
+          amount++;
+        }
+        else if (amount < 20) {
+          upsidedown[rand_l][rand_c] = 'C';
+          amount++;
+        }
         count++;
       }
     } while (count < 1);
