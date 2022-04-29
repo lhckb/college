@@ -6,8 +6,10 @@ int eleven_l, eleven_c, taxa_raiva = 0, vida = 100;
 char classroom[3][3];
 char upsidedown[10][10];
 int portal_l, portal_c;
-int *will_l, *will_c;
+int will_l, will_c;
 int demodog_coords[4][2];
+int new_demodogs[2][2];
+  int is_will_ok = 0, is_over = 0;
 
 void clearBoard(int size, char board[size][size])
 {
@@ -37,27 +39,35 @@ int placeElement(int l, int c, int size, char board[size][size], char el)
   return 0;
 }
 
-void moveWill(int *will_l, int *will_c)
+void moveWill()
 {
   srand(time(NULL));
   int possible1 = rand()%2;
   int possible2;
   if (possible1 == 0) {
     possible2 = rand()%2;
-    if (possible2 == 0) {
-      *will_l++;
+    if (possible2 == 0 && upsidedown[will_l + 1][will_c] == '_') {
+      upsidedown[will_l][will_c] = '_';
+      will_l++;
+      upsidedown[will_l][will_c] = 'W';
     }
-    else {
-      *will_l--;
+    else if (possible2 == 1 && upsidedown[will_l - 1][will_c] == '_') {
+      upsidedown[will_l][will_c] = '_';
+      will_l--;
+      upsidedown[will_l][will_c] = 'W';
     }
   }
   else {
     possible2 = rand()%2;
-    if (possible2 == 0) {
-      *will_c++;
+    if (possible2 == 0 && upsidedown[will_l][will_c + 1] == '_') {
+      upsidedown[will_l][will_c] = '_';
+      will_c++;
+      upsidedown[will_l][will_c] = 'W';
     }
-    else {
-      *will_c--;
+    else if (possible2 == 1 && upsidedown[will_l][will_c - 1] == '_') {
+      upsidedown[will_l][will_c] = '_';
+      will_c--;
+      upsidedown[will_l][will_c] = 'W';
     }
   }
 }
@@ -71,7 +81,157 @@ int demodogEncounter(int el_l, int el_c)
       return 1;
     }
   }
+
+  for (int i = 0; i < 4; i++) {
+    if (new_demodogs[i][0] == el_l && new_demodogs[i][1] == el_c) {
+      new_demodogs[i][0] = -1;
+      new_demodogs[i][1] = -1;
+      return 1;
+    }
+  }
+
   return 0;
+}
+
+void playUpsidedown()
+{
+  do {
+    char move;
+    printBoard(10, upsidedown);
+    printf("vida: %i\n", vida);
+    printf("O- obstáculo\nP- panquecas\nW-will\nS- saída\n");
+    printf("movimento: \n");
+    scanf("%c", &move);
+
+    switch (move) {
+      case 'w':
+        if ((upsidedown[eleven_l - 1][eleven_c] != 'O') && eleven_l - 1 >= 0) {
+          if (demodogEncounter(eleven_l, eleven_c) == 1) {
+            printf("encontrou um demodog\n");
+            vida -= 10;
+          }
+          if (upsidedown[eleven_l - 1][eleven_c] == 'P') {
+            vida += 5;
+          }
+          if (upsidedown[eleven_l - 1][eleven_c] == 'W') {
+            is_will_ok = 1;
+          }
+          if (upsidedown[eleven_l - 1][eleven_c] == 'S') {
+            is_over = 1;
+          }
+          upsidedown[eleven_l][eleven_c] = '_';
+          eleven_l--;
+          upsidedown[eleven_l][eleven_c] = 'E';
+        }
+        break;
+
+      case 's':
+        if ((upsidedown[eleven_l + 1][eleven_c] != 'O') && eleven_l + 1 < 10) {
+          if (demodogEncounter(eleven_l, eleven_c) == 1) {
+            printf("encontrou um demodog\n");
+            vida -= 10;
+          }
+          if (upsidedown[eleven_l + 1][eleven_c] == 'P') {
+            vida += 5;
+          }
+          if (upsidedown[eleven_l + 1][eleven_c] == 'W') {
+            is_will_ok = 1;
+          }
+          if (upsidedown[eleven_l + 1][eleven_c] == 'S') {
+            is_over = 1;
+          }
+          upsidedown[eleven_l][eleven_c] = '_';
+          eleven_l++;
+          upsidedown[eleven_l][eleven_c] = 'E';
+        }
+        break;
+
+      case 'a':
+        if ((upsidedown[eleven_l][eleven_c - 1] != 'O') && eleven_c - 1 >= 0) {
+          if (demodogEncounter(eleven_l, eleven_c) == 1) {
+            printf("encontrou um demodog\n");
+            vida -= 10;
+          }
+          if (upsidedown[eleven_l][eleven_c - 1] == 'P') {
+            vida += 5;
+          }
+          if (upsidedown[eleven_l][eleven_c - 1] == 'W') {
+            is_will_ok = 1;
+          }
+          if (upsidedown[eleven_l][eleven_c - 1] == 'S') {
+            is_over = 1;
+          }
+          upsidedown[eleven_l][eleven_c] = '_';
+          eleven_c--;
+          upsidedown[eleven_l][eleven_c] = 'E';
+        }
+        break;          
+
+      case 'd':
+        if ((upsidedown[eleven_l][eleven_c + 1] != 'O') && eleven_c + 1 < 10) {
+          if (demodogEncounter(eleven_l, eleven_c) == 1) {
+            printf("encontrou um demodog\n");
+            vida -= 10;
+          }
+          if (upsidedown[eleven_l][eleven_c + 1] == 'P') {
+            vida += 5;
+          }
+          if (upsidedown[eleven_l][eleven_c + 1] == 'W') {
+            is_will_ok = 1;
+          }
+          if (upsidedown[eleven_l][eleven_c + 1] == 'S') {
+            is_over = 1;
+          }
+          upsidedown[eleven_l][eleven_c] = '_';
+          eleven_c++;
+          upsidedown[eleven_l][eleven_c] = 'E';
+        }
+        break;
+    }
+
+    if (vida > 100) {
+      vida = 100;
+    }
+
+    int cond = 1;
+    if ((eleven_l - will_l < 2 || will_l - eleven_l < 2 || eleven_c - will_c < 2 || will_c - eleven_c < 2) && cond == 1) {
+      cond = 0;
+      for (int i = 0; i < 2; i++) {
+        int ok = 1;
+        do {
+          srand(time(NULL));
+          new_demodogs[i][0] = rand()%10;
+          new_demodogs[i][1] = rand()%10;
+          if (upsidedown[new_demodogs[i][0]][new_demodogs[i][1]] == '_') {
+            ok = 0;
+          }
+        } while (ok);
+      }
+    }
+
+    int rand_l, rand_c;
+    if (is_will_ok) {
+      int cond = 1;
+      do {
+        srand(time(NULL));
+        rand_l = rand()%10;
+        rand_c = rand()%10;
+        if (upsidedown[rand_l][rand_c] == '_') {
+          upsidedown[rand_l][rand_c] = 'S';
+          cond = 0;
+        }
+      } while (cond);
+
+      is_will_ok = 0;
+    }
+    else {
+      moveWill();
+    }
+
+    system("clear");
+  } while(is_over == 0);
+
+  printf("fim de jogo! vida final: %i\n", vida);
 }
 
 void startUpsideDown()
@@ -102,7 +262,7 @@ void startUpsideDown()
       eleven_c = rand_c;
       is_eleven_placed = 1;
     }
-  } while (is_eleven_placed != 1);
+  } while (is_eleven_placed == 0);
 
   for (int i = 0; i < 4; i++) {
     int cond = 1;
@@ -130,82 +290,18 @@ void startUpsideDown()
     } while (cond); 
   }
 
-  int is_will_ok = 0, is_over = 0;
+  int cond = 1; 
   do {
-    char move;
-    printBoard(10, upsidedown);
-    printf("vida: %i\n", vida);
-    printf("movimento: \n");
-    scanf("%c", &move);
-
-    switch (move) {
-      case 'w':
-        if ((upsidedown[eleven_l - 1][eleven_c] == '_' || upsidedown[eleven_l - 1][eleven_c] == 'P' || upsidedown[eleven_l - 1][eleven_c] == 'W') && eleven_l - 1 >= 0) {
-          if (demodogEncounter(eleven_l, eleven_c) == 1) {
-            printf("encontrou um demodog\n");
-            vida -= 10;
-          }
-          if (upsidedown[eleven_l - 1][eleven_c] == 'P') {
-            vida += 5;
-          }
-          upsidedown[eleven_l][eleven_c] = '_';
-          eleven_l--;
-          upsidedown[eleven_l][eleven_c] = 'E';
-        }
-        break;
-
-      case 's':
-        if ((upsidedown[eleven_l + 1][eleven_c] == '_' || upsidedown[eleven_l + 1][eleven_c] == 'P' || upsidedown[eleven_l + 1][eleven_c] == 'W') && eleven_l + 1 < 10) {
-          if (demodogEncounter(eleven_l, eleven_c) == 1) {
-            printf("encontrou um demodog\n");
-            vida -= 10;
-          }
-          if (upsidedown[eleven_l + 1][eleven_c] == 'P') {
-            vida += 5;
-          }
-          upsidedown[eleven_l][eleven_c] = '_';
-          eleven_l++;
-          upsidedown[eleven_l][eleven_c] = 'E';
-        }
-        break;
-
-      case 'a':
-        if ((upsidedown[eleven_l][eleven_c - 1] == '_' || upsidedown[eleven_l][eleven_c - 1] == 'P' || upsidedown[eleven_l][eleven_c - 1] == 'W') && eleven_c - 1 >= 0) {
-          if (demodogEncounter(eleven_l, eleven_c) == 1) {
-            printf("encontrou um demodog\n");
-            vida -= 10;
-          }
-          if (upsidedown[eleven_l][eleven_c - 1] == 'P') {
-            vida += 5;
-          }
-          upsidedown[eleven_l][eleven_c] = '_';
-          eleven_c--;
-          upsidedown[eleven_l][eleven_c] = 'E';
-        }
-        break;          
-
-      case 'd':
-        if ((upsidedown[eleven_l][eleven_c + 1] == '_' || upsidedown[eleven_l][eleven_c + 1] == 'P' || upsidedown[eleven_l][eleven_c + 1] == 'W') && eleven_c + 1 < 10) {
-          if (demodogEncounter(eleven_l, eleven_c) == 1) {
-            printf("encontrou um demodog\n");
-            vida -= 10;
-          }
-          if (upsidedown[eleven_l][eleven_c + 1] == 'P') {
-            vida += 5;
-          }
-          upsidedown[eleven_l][eleven_c] = '_';
-          eleven_c++;
-          upsidedown[eleven_l][eleven_c] = 'E';
-        }
-        break;
+    srand(time(NULL));
+    will_l = rand()%10;
+    will_c = rand()%10;
+    if (upsidedown[will_l][will_c] == '_') {
+      upsidedown[will_l][will_c] = 'W';
+      cond = 0;
     }
+  } while (cond);
 
-    if (vida > 100) {
-      vida = 100;
-    }
-
-    system("clear");
-  } while(is_over != 1);
+  playUpsidedown();
 }
 
 void startClassroom()
