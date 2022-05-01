@@ -341,7 +341,7 @@ void startClassroom()
         printf("voce morreu.\n");
         exit(1);
       }
-      printf("sua vida está em %i, pressione qualquer tecla para continuar.\n", vida);
+      printf("sua vida está em %i, pressione enter para continuar.\n", vida);
       printBoard(3, classroom);
       getchar();
     }

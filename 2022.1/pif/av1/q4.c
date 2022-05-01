@@ -35,7 +35,7 @@ int cerseiNegotiation()
   char trash;
   do {
     srand(time(NULL));
-    printf("tentar negociação (pressione qualquer tecla): ");
+    printf("tentar negociação (pressione enter): ");
     scanf("%c", &trash);
     negotiation = rand()%101;
 
@@ -65,7 +65,7 @@ int cerseiWar()
 
   do {
     if (turn == 1) {
-      printf("vez do jon (pressione qualquer tecla): ");
+      printf("vez do jon (pressione enter): ");
       getchar();
       int jon = attack();
       if (jon >= 50) {
@@ -77,7 +77,7 @@ int cerseiWar()
     printf("jon: %i\ncersei: %i\n", jon_life, cersei_life);
 
     if (turn == 2) {
-      printf("vez da cersei (pressione qualquer tecla): ");
+      printf("vez da cersei (pressione enter): ");
       getchar();
       int cersei = attack();
       if (cersei >= 50) {
@@ -106,7 +106,7 @@ int nightKingWar()
 
   do {
     if (turn == 1) {
-      printf("vez do jon (pressione qualquer tecla): ");
+      printf("vez do jon (pressione enter): ");
       getchar();
       int jon = attack();
       if (jon >= 50) {
@@ -118,7 +118,7 @@ int nightKingWar()
     printf("jon: %i\nrei da noite: %i\n", jon_life, nk_life);
 
     if (turn == 2) {
-      printf("vez do rei da noite (pressione qualquer tecla): ");
+      printf("vez do rei da noite (pressione enter): ");
       getchar();
       int cersei = attack();
       if (cersei >= 50) {
