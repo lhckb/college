@@ -1,193 +1,319 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-#define SIZE 28
+void tabuleiro(J1, J2) {
+  int x, y, c;
+  char cor;
+  for (x = 0; x < 10; x++)
+    printf("+--------");
 
-int vida1 = 10, vida2 = 10;
-int pos1 = 0, pos2 = 0;
-char tab[] = {'P', 'B', 'V', 'v', 'B', 'A', 'B', 'L', 'a', 'B', 'V', 'v', 'P', 'A', 'B', 'B', 'V', 'v', 'B', 'a', 'B', 'V', 'v', 'B', 'A', 'V', 'a', 'v', 'P'};
-int is_over = 0;
-int locked_jog1 = 0, locked_jog2 = 0;
+  printf("+\n");
+  for (x = 0; x < 7; x++) {
+    for (y = 0; y < 10; y++) {
 
-void printBoard()
-{
-  for (int i = 0; i < SIZE; i++) {
-    if (pos1 == i && pos2 == i) {
-      printf("3 ");
+      if (x == 0 || ((x != 1 || x != 2) && y > 8) || x == 6)
+        printf("|");
+
+      else
+        printf(" ");
+
+      if ((J1 < 9) && (x == 0 && y == J1))
+        printf("J1");
+
+      else if ((J1 < 16) && (x == (J1 - 9) && y == 9))
+        printf("J1");
+
+      else if ((J1 > 15) && (x == 6 && y == (25 - J1)))
+        printf("J1");
+
+      else if ((J1 > 25) && (x == (31 - J1) && y == 0))
+        printf("J1");
+
+      else
+        printf("  ");
+
+      if (((x == 0 || x == 3) && y == 0) || (x == 2 && y == 9)) // PRETO
+        printf(" Pr ");
+
+      else if ((x == 0 && (y == 1 || y == 4 || y == 6 || y == 8)) ||
+               (x == 4 && y == 9) || (x == 5 && (y == 0 || y == 9)) ||
+               (x == 6 && (y == 5 || y == 6))) // BRANCO
+        printf(" Br ");
+
+      else if ((x == 0 && (y == 2 || y == 9)) ||
+               (x == 6 && (y == 0 || y == 4 || y == 9))) // VERMELHO
+        printf(" Vr ");
+
+      else if ((x == 0 && y == 3) || (x == 1 && y == 9) || (x == 4 && y == 0) ||
+               (x == 6 && (y == 3 || y == 8))) // VERDE
+        printf(" Vd ");
+
+      else if ((x == 0 && y == 5) || (x == 3 && y == 9) ||
+               (x == 6 && y == 1)) // AZUL
+        printf(" Az ");
+
+      else if (x == 0 || x == 6) // AMARELO
+        printf(" Am ");
+
+      else
+        printf("    ");
+
+      if ((J2 < 9) && (x == 0 && y == J2))
+        printf("J2");
+
+      else if ((J2 < 16) && (x == (J2 - 9) && y == 9))
+        printf("J2");
+
+      else if ((J2 > 15) && (x == 6 && y == (25 - J2)))
+        printf("J2");
+
+      else if ((J2 > 25) && (x == (31 - J2) && y == 0))
+        printf("J2");
+
+      else
+        printf("  ");
+
+      // if(x>2 && y<1)
+      //  printf("|");
+
+      // else
+      //  printf("        ");
     }
-    else if (pos1 == i) {
-      printf("1 ");
-    }
-    else if (pos2 == i) {
-      printf("2 ");
-    }
-    else {
-      printf("%c ", tab[i]);
-    }
+    printf("|\n");
+
+    if (x == 0 || x > 4)
+      printf("+--------+--------+--------+--------+--------+--------+--------+-"
+             "-------+--------+--------+");
+    else if (x != 1)
+      printf("+--------+                                                       "
+             "                +--------+");
+    else
+      printf("                                                                 "
+             "                +--------+");
+
+    printf("\n");
   }
-  printf("\n");
+}
+// struct de vida e posição do jogador
+typedef struct Jogador {
+  int vida;
+  int position;
+  bool your_turn;
+
+} p1, p2;
+
+// gerar numeros aleatorios p o dado
+int rolar_dado() {
+  int saida;
+  saida = (rand() % 6) + 1;
+  return saida;
 }
 
-int turnPlayer1()
-{
+
+int main() {
   srand(time(NULL));
-  int dice1 = 1 + rand()%6;
+  int r = 0, a, b, i, j, soma1, soma2;
 
-  printf("rodou %i nos dados\n", dice1);
+  int p1_vida = 10;
+  int p1_position = 0;
+  int p2_vida = 10;
+  int p2_position = 0;
+  int dado;
+  bool p1_your_turn = 0, p2_your_turn = 0, p1_am = 0, p2_am = 0;
 
-  pos1 += dice1;
-  if (pos1 >= SIZE - 1) {
-    is_over = 1;
-    printf("jogador 1 venceu com %i de vida!\n", vida1);
-  }
+  
+  printf("INICIO DO JOGO: \n");
+  printf("pressione enter para começar: \n");
+  getc(stdin);
 
-  if (tab[pos1] == 'V') {
-    vida1 -= 3;
-  }
-  if (tab[pos1] == 'v') {
-    vida1 += 1;
-  }
-  if (tab[pos1] == 'a') {
-    locked_jog1 = 1;
-    return 2;
-  }
-  if (tab[pos1] == 'A') {
-    return 3;
-  }
-  if (tab[pos1] == 'P') {
-    pos1 = 0;
-  }
-}
+  while (r == 0) {
+    printf("quem obter a maior soma dos dados começa o jogo!\n ");
 
-int turnPlayer2()
-{
-  srand(time(NULL));
-  int dice2 = 1 + rand()%6;
+    printf("jogando os dados do jogador 1: \n\n");
+    a = rolar_dado();
+    b = rolar_dado();
+    soma1 = a + b;
+    printf("%d %d\nsoma = %d\n", a, b, soma1);
 
-  printf("rodou %i nos dados\n", dice2);
+    printf("jogando os dados do jogador 2: \n\n");
+    a = rolar_dado();
+    b = rolar_dado();
+    soma2 = a + b;
+    printf("%d %d\nsoma = %d\n", a, b, soma2);
 
-  pos2 += dice2;
-  if (pos2 >= SIZE - 1) {
-    is_over = 1;
-    printf("jogador 2 venceu cm %i de vida!\n", vida2);
-  }
-
-  if (tab[pos2] == 'V') {
-    vida1 -= 3;
-  }
-  if (tab[pos2] == 'v') {
-    vida1 += 1;
-  }
-  if (tab[pos2] == 'a') {
-    locked_jog2 = 1;
-    return 2;
-  }
-  if (tab[pos2] == 'A') {
-    return 3;
-  }
-  if (tab[pos2] == 'P') {
-    pos2 = 0;
-  }
-}
-
-int defineFirst() 
-{
-  srand(time(NULL));
-  int dice1_1, dice1_2, dice2_1, dice2_2;
-  dice1_1 = 1 + rand()%6;
-  dice1_2 = 1 + rand()%6;
-  dice2_1 = 1 + rand()%6;
-  dice2_2 = 1 + rand()%6;
-
-  int jog1_dice = dice1_1 + dice1_2;
-  int jog2_dice = dice2_1 + dice2_2;
-
-  if (jog1_dice > jog2_dice) {
-    printf("dados do jogador 1 deram %i sobre %i do jogador 2!\n", jog1_dice, jog2_dice);
-    return 1;
-  }
-  else if (jog2_dice > jog1_dice) {
-    printf("dados do jogador 2 deram %i sobre %i do jogador 1!\n", jog2_dice, jog1_dice);
-    return 2;
-  }
-  else {
-    defineFirst();
-  }
-}
-
-int main()
-{
-  printf("-----LEGENDA-----\n");
-  printf("1- posição do jogador 1\n2- posição do jogador 2\n3- se os dois estiverem na mesma casa\n\n");
-  printf("P- preta\nB- branca\nV- vermelha\nv- verde\na- amarela\nA- azul\n");
-
-  int turn = defineFirst();
-  if (turn == 1) {
-    printf("jogador 1 inicia!\n");
-  }
-  else {
-    printf("jogador 2 inicia!\n");
-  }
-
-  while (is_over == 0) {
-    if (locked_jog1 > 0) {
-      turn = 2;
-      locked_jog1--;
+    if (soma1 == soma2) {
+      printf("Empate! Rolem novamente.\n\n");
+      r = 0;
+    } else if (soma1 > soma2) {
+      printf("O jogador 1 ira começar!\n\n");
+      p1_your_turn = 1;
+      p2_your_turn = 0;
+      r = 1;
+    } else if (soma2 > soma1) {
+      printf("O jogador 2 ira começar!\n\n");
+      p1_your_turn = 0;
+      p2_your_turn = 1;
+      r = 1;
     }
-    if (locked_jog2 > 0) {
-      turn = 1;
-      locked_jog2--;
-    }
+    printf("celula branca: espaço neutro\n");
+    printf("celula vermelha: -3 vidas\n");
+    printf("celula verde: +1 vida\n");
+    printf("celula amarela: 1 turno sem jogar\n");
+    printf("celula azul: jogador joga novamente\n");
+    printf("celula preta: jogador volta ao inicio\n\n");
+  }
 
-    if (turn == 1 && locked_jog1 == 0) {
-      printf("vez do jogador 1, pressione enter");
-      getchar();
-      int res = turnPlayer1();
-      if (res == 3) {
-        turn = 1;
-      }
+
+  // posicao = dado;
+  // if(p1_your_turn){
+  // tab2[p1_position][0] = 0;
+  // verificar posicao no array
+  // zerar posicao no array
+  // andar jogador 1
+
+  tabuleiro(p1_position, p2_position);
+
+  while ((p1_position < 28) && (p2_position < 28) && (p1_vida > 0) && (p2_vida > 0)) {
+    if (p1_your_turn == 1) {
+      if (p1_am == 1) {
+        printf("Jogador 1 nao ira jogar\n");
+
+        p1_your_turn = 0;
+        p2_your_turn = 1;
+        p1_am = 0;
+        printf("vidas do jogador 1: %d\n", p1_vida);
+      } 
       else {
-        turn = 2;
+        printf("Vez do jogador 1, role!\n");
+        
+        getc(stdin);
+        printf("Dado: %d\n", dado = rolar_dado());
+        p1_position = p1_position + dado;
+        
+
+        
+        // JOGADOR 1
+
+        if (p1_position == 0 || p1_position == 12) {
+          p1_position = 0;
+          p1_your_turn = 0;
+          p2_your_turn = 1;
+          printf("vidas do jogador 1: %d\n", p1_vida);
+        }
+
+        else if (p1_position == 2 || p1_position == 9 || p1_position == 15 || p1_position == 24) {
+          p1_vida = p1_vida - 3;
+          p1_your_turn = 0;
+          p2_your_turn = 1;
+          printf("vidas do jogador 1: %d\n", p1_vida);
+        }
+
+        else if (p1_position == 7 || p1_position == 18 || p1_position == 26) {
+          p1_am = 0;
+          p1_your_turn = 0;
+          p2_your_turn = 1;
+          printf("vidas do jogador 1: %d\n", p1_vida);
+
+        }
+
+        else if (p1_position == 3 || p1_position == 10 || p1_position == 17 || p1_position == 22 || p1_position == 27) {
+          if (p1_vida < 10) {
+            p1_vida = p1_vida + 1;
+            printf("vidas do jogador 1: %d\n", p1_vida);
+          }
+        } else if (p1_position == 5 || p1_position == 12 || p1_position == 23) {
+          // rolar dado novamente
+          rolar_dado();
+          p1_your_turn = 1;
+          p2_your_turn = 0;
+          printf("vidas do jogador 1: %d\n", p1_vida);
+        } 
+        else {
+          p1_your_turn = 0;
+          p2_your_turn = 1;
+          printf("vidas do jogador 1: %d\n", p1_vida);
+        }
       }
-      printBoard();
     }
+    // JOGADOR 2
+    if (p2_your_turn == 1) {
 
-    printf("\n\n");
-    if (is_over) {
-      break;
-    }
+      if (p2_am == 1) {
+        printf("Jogador 2 nao ira jogar\n");
 
-    if (turn == 2 && locked_jog2 == 0) {
-      printf("vez do jogador 2, pressione enter");
-      getchar();
-      int res = turnPlayer2();
-      if (res == 3) {
-        turn = 2;
+        p1_your_turn = 0;
+        p2_your_turn = 1;
+        p1_am = 0;
+        printf("vidas do jogador 2: %d\n", p2_vida);
+      } else {
+        
+        printf("Vez do jogador 2, Role!\n");
+        getc(stdin);
+        
+        printf("Dado: %d\n", dado = rolar_dado());
+        p2_position = p2_position + dado;
+
+        if (p2_position == 0 || p2_position == 12) {
+          p2_position = 0;
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        }
+
+        else if (p2_position == 2 || p2_position == 9 || p2_position == 15 ||               p2_position == 24) {
+          p2_vida = p2_vida - 3;
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        }
+
+        else if (p2_position == 7 || p2_position == 18 || p2_position == 26) {
+          p2_am = 0;
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        }
+
+        else if (p2_position == 3 || p2_position == 10 || p2_position == 17 || p2_position == 22 || p2_position == 27) {
+          if (p2_vida < 10) {
+            p2_vida = p2_vida + 1;
+          }
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        } 
+        
+        else if (p2_position == 5 || p2_position == 12 || p2_position == 23) {
+          // rolar dado novamente
+          rolar_dado();
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        } 
+        else {
+          p2_your_turn = 0;
+          p1_your_turn = 1;
+          printf("vidas do jogador 2: %d\n", p2_vida);
+        }
       }
-      else {
-        turn = 1;
-      }
-      printBoard();
     }
 
-    if (vida1 <= 0) {
-      is_over = 1;
-      printf("jogador 1 morreu\n");
-    }
-    else if (vida2 <= 0) {
-      is_over = 1;
-      printf("jogador 2 morreu\n");
-    }
-    
-    if (vida1 > 10) {
-      vida1 = 10;
-    }
-    if (vida2 > 10) {
-      vida2 = 10;
-    }
-
-    printf("\nvida jog1: %i\nvida jog2: %i\n\n", vida1, vida2);
-
+    tabuleiro(p1_position, p2_position);
   }
+  if(p1_vida<=0)
+    printf("O Jogador 1 morreu!\n");
+
+  else if(p2_vida<=0)
+    printf("O Jogador 2 morreu!\n");
+  
+  else if(p1_position>27)
+    printf("O Jogador 1 venceu!\n");
+  else if(p2_position>27)
+    printf("O Jogador 2 venceu!\n");
+  
+  return 0;
 }
+
