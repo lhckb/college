@@ -9,11 +9,6 @@ int jon_l = 0, jon_c = 0;
 int jon_life = 100, cersei_life = 100, nk_life = 200;
 int talked_cersei = 0;
 
-void move_w();
-void move_a();
-void move_s();
-void move_d();
-
 void printWesteros()
 {
   for (int i = 0; i < SIZE; i++) {
