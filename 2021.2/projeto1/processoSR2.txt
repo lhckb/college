@@ -1,6 +1,0 @@
-semana 1(18/10 - 22/10)-
--inicio do desenvolvimento do protótipo de baixa fidelidade
--teste inicial das tecnologias python necessarias
--convera com Wal, professora de canto de Patrícia, para ter melhor uma noção de conceitos musicais para aplicarmos em nosso projeto
--divisão inicial de tarefas para desenvolvimento do relatório
-

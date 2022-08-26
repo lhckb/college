@@ -1,0 +1,20 @@
+eu vou matar alguém|-5|-5|-5
+ele quer esquartejar minha família|-5|-5|-5
+houve um homicidio em minha casa|-5|-4|-5
+a terceira guerra está chegando|-4|-3|-5
+quero cometer suicidio|-3|-1|-2
+infelizmente houveram feridos no acidente|-3|-2|-2
+minha tia cometeu latrocínio|-2|-3|-3
+perdi todos os meus pertences em um assalto|-2|-3|-2
+estou sentindo muita dor|-1|0|-2
+meu deus que tristeza horrível|-1|-2|-3
+hoje vou levantar peso|0|1|0
+que alegria imensa|1|2|1
+levantei 150kg na academia|1|3|1
+gosto muito da nossa amizade|2|4|3
+vou comer meu ovo cozido|2|2|2
+fui bem na lista de eldrey|5|5|5
+eu amo viver|4|5|4
+estou me sentindo muito bem|4|4|5
+gosto de ajudar velhinhas|5|4|4
+criei uma casa de adoção para gatos de rua|5|5|5
