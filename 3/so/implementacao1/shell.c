@@ -9,14 +9,17 @@
 void clearCommand(char command[][MAX_LINE/2 + 1]);
 void executeSequential(char *command);
 void executeParallel(char command[][MAX_LINE / 2 + 1], int num);
+void clearArray(char array[]);
 
 int main(void)
 {
 	char args[MAX_LINE/2 + 1];	/* command line has max of 40 arguments */
-  char args_copy[MAX_LINE / 2 + 1];
+  char comm_copy[MAX_LINE / 2 + 1];
 	char command[MAX_LINE/2 + 1][MAX_LINE/2 + 1];
 	int should_run = 1;		/* flag to help exit program*/
 	int style = 0;
+
+  clearArray(comm_copy);
 
 	while (should_run) {
 		clearCommand(command);
@@ -26,7 +29,11 @@ int main(void)
 		fflush(stdout);
 
 		fgets(args, MAX_LINE, stdin);
-		if (strcmp("exit\n", args) == 0) {
+    if (strcmp("!!\n", args) == 0) {
+      if (comm_copy[0] == 0) printf("No commands\n");
+      else executeSequential(comm_copy);
+    }
+		else if (strcmp("exit\n", args) == 0) {
 			should_run = 0;
 		}
     else if (strcmp("style parallel\n", args) == 0) {
@@ -36,15 +43,13 @@ int main(void)
       style = 0;
     }
     else {
-      if (strcmp("!!\n", args) == 0) {
-        for (int i = 0; args_copy[i + 1] != '\n'; i++) {
-          args[i] = args_copy[i];
-        }
-      }
-      int true = 1, comm_num = 0, comm_count = 0, arg_count = 0;
+      int true = 1, comm_num = 0, comm_count = 0, arg_count = 0, comm_num_prev = -1;
+      clearArray(comm_copy);
       while (true) {
+
         if (args[arg_count] != ';' && args[arg_count] != '\n') {
           command[comm_num][comm_count] = args[arg_count];
+          comm_copy[comm_count] = args[arg_count];
         }
         else {
           comm_count = -1;
@@ -113,4 +118,10 @@ void clearCommand(char command[][MAX_LINE/2 + 1]) {
 		  command[i][j] = 0;
     }
 	}
+}
+
+void clearArray(char array[]) {
+  for (int i = 0; i < MAX_LINE / 2 + 1; i++) {
+    array[i] = 0;
+  }
 }
