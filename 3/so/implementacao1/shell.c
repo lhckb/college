@@ -13,6 +13,7 @@ void executeParallel(char command[][MAX_LINE / 2 + 1], int num);
 int main(void)
 {
 	char args[MAX_LINE/2 + 1];	/* command line has max of 40 arguments */
+  char args_copy[MAX_LINE / 2 + 1];
 	char command[MAX_LINE/2 + 1][MAX_LINE/2 + 1];
 	int should_run = 1;		/* flag to help exit program*/
 	int style = 0;
@@ -35,6 +36,11 @@ int main(void)
       style = 0;
     }
     else {
+      if (strcmp("!!\n", args) == 0) {
+        for (int i = 0; args_copy[i + 1] != '\n'; i++) {
+          args[i] = args_copy[i];
+        }
+      }
       int true = 1, comm_num = 0, comm_count = 0, arg_count = 0;
       while (true) {
         if (args[arg_count] != ';' && args[arg_count] != '\n') {
