@@ -1,0 +1,2 @@
+cock:
+	@echo cock
