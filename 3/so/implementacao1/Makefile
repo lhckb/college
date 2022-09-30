@@ -1,2 +1,2 @@
 compile:
-	gcc -o shell shell.c
+	gcc -o shell shell2.c

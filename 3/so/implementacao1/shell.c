@@ -6,23 +6,89 @@
 
 #define MAX_LINE 80 /* 80 chars per line, per command */
 
-void clearCommand(char command[][MAX_LINE/2 + 1]);
-void executeSequential(char *command);
-void executeParallel(char command[][MAX_LINE / 2 + 1], int num);
-void clearArray(char array[]);
+void clearCommand(char *command[]) {
+	for (int i = 0; i < MAX_LINE / 2 + 1; i++) {
+    for (int j = 0; j < MAX_LINE / 2 + 1; j++) {
+		  command[i][j] = 0;
+    }
+	}
+}
+
+void executeSequential(char *command) {
+  char *comms[MAX_LINE/2 + 1];
+  //clearCommand(comms);
+
+  int id1 = 0, id2 = 0;
+  for (int i = 0; command[i] != '\0'; i++) {
+    if (command[i] == ' ') {
+      id1++;
+      id2 = 0;
+    }
+    else {
+      comms[id1][id2] = command[i];
+      id2++;
+    }
+  }
+
+  pid_t pid;
+
+  pid = fork();
+
+  if (pid < 0) {
+    fprintf(stderr, "Fork failed.\n");
+  } 
+
+  else if (pid > 0) wait(NULL);
+
+  else if (pid == 0) {
+    printf("%s\n", comms[0]);
+    printf("%s\n", comms[1]);
+    // system(comms[0]);
+    execvp(comms[0], comms);
+  }
+}
+
+// void executeParallel(char command[][MAX_LINE / 2 + 1], int num) {  
+
+//   for (int i = 0; i < num; i++) {
+//     pid_t pid = fork();
+
+//     if (pid < 0) {
+//       fprintf(stderr, "Fork failed.\n");
+//     } 
+
+//     else if (pid > 0) wait(NULL);
+
+//     else if (pid == 0) {
+//       system(command[i]);
+//       // raise(15);
+//     }
+//   }
+// }
+
+
+void clearArray(char array[]) {
+  for (int i = 0; i < MAX_LINE / 2 + 1; i++) {
+    array[i] = 0;
+  }
+}
+
+void sliceCommand(char *args) {
+
+}
 
 int main(void)
 {
 	char args[MAX_LINE/2 + 1];	/* command line has max of 40 arguments */
   char comm_copy[MAX_LINE / 2 + 1];
-	char command[MAX_LINE/2 + 1][MAX_LINE/2 + 1];
+	char *command[MAX_LINE/2 + 1];
 	int should_run = 1;		/* flag to help exit program*/
 	int style = 0;
 
   clearArray(comm_copy);
 
 	while (should_run) {
-		clearCommand(command);
+		//clearCommand(command);
 
 		if (style == 0) printf("lhcc seq> ");
 		if (style == 1) printf("lhcc par> ");
@@ -68,60 +134,12 @@ int main(void)
           executeSequential(command[i]);
         }
       }
-      else {
-        executeParallel(command, comm_num);
-      }
+      // else {
+      //   executeParallel(command, comm_num);
+      // }
     }
 
 	}
 	
 	return 0;
-}
-
-void executeSequential(char *command) {
-  pid_t pid;
-
-  pid = fork();
-
-  if (pid < 0) {
-    fprintf(stderr, "Fork failed.\n");
-  } 
-
-  else if (pid > 0) wait(NULL);
-
-  else if (pid == 0) {
-    system(command);
-    raise(15);
-  }
-}
-
-void executeParallel(char command[][MAX_LINE / 2 + 1], int num) {
-  for (int i = 0; i < num; i++) {
-    pid_t pid = fork();
-
-    if (pid < 0) {
-      fprintf(stderr, "Fork failed.\n");
-    } 
-
-    else if (pid > 0) wait(NULL);
-
-    else if (pid == 0) {
-      system(command[i]);
-      raise(15);
-    }
-  }
-}
-
-void clearCommand(char command[][MAX_LINE/2 + 1]) {
-	for (int i = 0; i <= MAX_LINE / 2 + 1; i++) {
-    for (int j = 0; j <= MAX_LINE / 2 + 1; j++) {
-		  command[i][j] = 0;
-    }
-	}
-}
-
-void clearArray(char array[]) {
-  for (int i = 0; i < MAX_LINE / 2 + 1; i++) {
-    array[i] = 0;
-  }
 }
