@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define READ_END 0
 #define WRITE_END 1
 #define BUFFER_SIZE 50
 
-int main(void) {
-	char write_msg[] = "message #1";
+int main(int argc, char *argv[]) {
+	char write_msg[BUFFER_SIZE];
 	char read_msg[BUFFER_SIZE];
+
+  if (argc > 1) strcpy(write_msg, argv[1]);
+  else exit(1);
 
 	pid_t pid;
 	int fd[2];
@@ -28,7 +32,7 @@ int main(void) {
 		close(fd[WRITE_END]);
 		read(fd[READ_END], read_msg, BUFFER_SIZE); 
 		close(fd[READ_END]);
-		printf("the message is = %s", read_msg);
+		printf("the message is = %s\n", read_msg);
 	}
 	else {
 		close(fd[READ_END]);

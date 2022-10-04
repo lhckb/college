@@ -1,57 +1,57 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define MAX_LINE 80 /* 80 chars per line, per command */
 
 int style = 0;
 
-void splitInputIntoArgs(char *input, char *args[]) {
-	// put input into a buffer, then copy buffer into args[arg_count]
+void splitInputIntoComms(char *input, char *comms[MAX_LINE / 2 + 1]) {
+	int comm_count = 0, true = 1;
+  char *piece;
 
-	char *buffer;
-	int arg_count = 0, arg_index = 0, input_index = 0, true = 1;
+  while (true) {
+    piece = strtok_r(input, ";", &input);
+    if (piece != NULL) {
+      comms[comm_count] = piece;
+      comm_count++;
+    }
+    else {
+      true = 0;
+    }
+  }
+}
 
-	// while (true) {
-	// 	if (input[input_index] == ';') {
-	// 		strcpy(args[arg_count], buffer);
-	// 		buffer = NULL;
-	// 		arg_index = 0;
-	// 		arg_count++;
-	// 	}
-	// 	else {
-	// 		buffer[arg_index] = input[input_index];
-	// 	}
+void splitCommandIntoArgs(char *command, char *res[MAX_LINE / 2 + 1]) {
+  int true = 1, arg_count = 0;
+  char *piece;
 
-	// 	input_index++;
-	// }
+  while (true) {
+    piece = strtok_r(command, " ", &command);
+    if (piece != NULL) {
+      res[arg_count] = piece;
+      arg_count++;
+    }
+    else {
+      true = 0;
+    }
+  }
+}
 
-	// while (true) {
-	// 	if (input[input_index] == ';') {
-	// 		arg_count++;
-	// 		arg_index = 0;
-	// 		// input_index++;
-	// 	}
-	// 	else if (input[input_index] == '\n') {
-	// 		// input_index++;
-	// 	}
-	// 	else {
-	// 		args[arg_count][arg_index] = input[input_index];
-	// 		arg_index++;
-	// 		// input_index++;
-	// 	}
-	// 	if (input[input_index] == '\0') {
-	// 		true = 0;
-	// 	}
-	// 	input_index++;
-	// }
+void executeSequential(char *command[]) {
+  printf("%s\n", command);
+  char *args[MAX_LINE / 2 + 1];
+  splitCommandIntoArgs(command, args);
+  printf("%s\n", args[0]);
 }
 
 int main(void)
 {
-	char *args[MAX_LINE/2 + 1];	/* command line has max of 40 arguments, list of pointers to char */
-	char *input;
-	int should_run = 1;		/* flag to help exit program*/
+	char *comms[MAX_LINE/2 + 1];	/* command line has max of 40 arguments, list of pointers to char */
+	char input[MAX_LINE];
+
+	int should_run = 1;	
 
 	while (should_run) {
 
@@ -59,11 +59,14 @@ int main(void)
 		if (style == 1) printf("lhcc par> ");
 		fflush(stdout);
 
-		fgets(input, MAX_LINE * 40, stdin);
+		fgets(input, MAX_LINE, stdin);
+		printf("%s\n\n", input);
 
 		if (!strcmp(input, "exit\n")) should_run = 0;
 		else {
-			splitInputIntoArgs(input, args);
+      splitInputIntoComms(input, comms);
+
+      if (style == 0) executeSequential(comms);
 		}
 
 		/*
