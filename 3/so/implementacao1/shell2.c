@@ -6,7 +6,7 @@
 
 #define MAX_LINE 80 /* 80 chars per line, per command */
 
-int style = 1;
+int style = 0;
 int general_count, gen_arg_count;
 
 void removeNewLine(char *str) {
@@ -64,6 +64,7 @@ void executeSequential(char **command) {
   else if (pid > 0) wait(NULL);
 }
 
+// TODO is this shit really parallel???
 void executeParallel(char **commands) {
   for (int i = 0; i < general_count; i++) {
     pid_t pid = fork();
@@ -71,6 +72,7 @@ void executeParallel(char **commands) {
     if (pid < 0) fprintf(stderr, "Fork failed.\n");
     else if (pid == 0){
       char *args[general_count];
+      removeNewLine(commands[i]);
       splitCommandIntoArgs(commands[i], args);
       if (execvp(args[0], args) == -1) fprintf(stderr, "Execvp failed.\n");
     }
@@ -94,6 +96,8 @@ int main(void)
 		fgets(input, MAX_LINE, stdin);
 
 		if (!strcmp(input, "exit\n")) should_run = 0;
+    else if (!strcmp(input, "style parallel\n")) style = 1;
+    else if (!strcmp(input, "style sequential\n")) style = 0;
 		else {
       splitInputIntoComms(input, comms);
 
