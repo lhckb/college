@@ -9,6 +9,10 @@
 int style = 0;
 int general_count, gen_arg_count;
 
+void getBatchInput() {
+
+}
+
 void removeNewLine(char *str) {
   for (int i = 0; i < strlen(str); i++) {
     if (str[i] == '\n') {
@@ -80,7 +84,7 @@ void executeParallel(char **commands) {
   }
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	char *comms[MAX_LINE/2 + 1];	/* command line has max of 40 arguments, list of pointers to char */
 	char input[MAX_LINE];
@@ -89,30 +93,44 @@ int main(void)
 
 	while (should_run) {
 
-		if (style == 0) printf("lhcc seq> ");
-		if (style == 1) printf("lhcc par> ");
-		fflush(stdout);
+    // INTERACTIVE
+    if (argc == 1) {
+      if (style == 0) printf("lhcc seq> ");
+      if (style == 1) printf("lhcc par> ");
+      fflush(stdout);
 
-		fgets(input, MAX_LINE, stdin);
+      fgets(input, MAX_LINE, stdin);
 
-		if (!strcmp(input, "exit\n")) should_run = 0;
-    else if (!strcmp(input, "style parallel\n")) style = 1;
-    else if (!strcmp(input, "style sequential\n")) style = 0;
-		else {
-      splitInputIntoComms(input, comms);
+      if (!strcmp(input, "exit\n")) should_run = 0;
+      else if (!strcmp(input, "style parallel\n")) style = 1;
+      else if (!strcmp(input, "style sequential\n")) style = 0;
+      else {
+        splitInputIntoComms(input, comms);
 
-      if (style == 0) {
-        for (int i = 0; i < general_count; i++) {
-          char *args[MAX_LINE / 2 + 1];
-          removeNewLine(comms[i]);
-          splitCommandIntoArgs(comms[i], args);
-          executeSequential(args);
+        if (style == 0) {
+          for (int i = 0; i < general_count; i++) {
+            char *args[MAX_LINE / 2 + 1];
+            removeNewLine(comms[i]);
+            splitCommandIntoArgs(comms[i], args);
+            executeSequential(args);
+          }
+        }
+        else if (style == 1) {
+          executeParallel(comms);
         }
       }
-      else if (style == 1) {
-        executeParallel(comms);
-      }
-		}
+    }
+    else if (argc > 1) {
+      FILE* batch_file;
+      batch_file = fopen(argv[1], "r");
+
+      char buffer[MAX_LINE];
+      fgets(buffer, MAX_LINE, batch_file);
+
+      printf("%s\n", buffer);
+      //fprintf(batch_file, "testing");
+    }
+
 
 		/*
 		After read the input, the next steps are:
