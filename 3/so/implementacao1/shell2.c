@@ -123,12 +123,18 @@ int main(int argc, char *argv[])
     else if (argc > 1) {
       FILE* batch_file;
       batch_file = fopen(argv[1], "r");
+      char c;
+      int count = 0;
 
       char buffer[MAX_LINE];
-      fgets(buffer, MAX_LINE, batch_file);
+      do {
+        c = fgetc(batch_file);
+        buffer[count] = c;
+        count ++;
+      } while (c != EOF);
 
       printf("%s\n", buffer);
-      //fprintf(batch_file, "testing");
+      should_run = 0;
     }
 
 
