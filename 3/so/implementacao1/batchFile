@@ -1,5 +1,4 @@
 ls
 pwd
-ls -la
+ls
 ps
-exit

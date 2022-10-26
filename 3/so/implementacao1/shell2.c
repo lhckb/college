@@ -9,13 +9,27 @@
 int style = 0;
 int general_count, gen_arg_count;
 
-void getBatchInput() {
+void splitBatchInputIntoComms(char *str, char **comms) {
+	int comm_count = 0, true = 1;
+  general_count = 0;
+  char *piece;
 
+  while (true) {
+    piece = strtok_r(str, "\n", &str);
+    if (piece != NULL) {
+      comms[comm_count] = piece;
+      comm_count++;
+      general_count++;
+    }
+    else {
+      true = 0;
+    }
+  }
 }
 
 void removeNewLine(char *str) {
   for (int i = 0; i < strlen(str); i++) {
-    if (str[i] == '\n') {
+    if (str[i] == '\n' || str[i] == EOF) {
       str[i] = 0;
     }
   }
@@ -59,13 +73,15 @@ void splitCommandIntoArgs(char *command, char *args[MAX_LINE / 2 + 1]) {
 }
 
 void executeSequential(char **command) {
-  pid_t pid = fork();
+  if (execvp(command[0], command) == -1) fprintf(stderr, "Command not found.\n");
 
-  if (pid < 0) fprintf(stderr, "Fork failed.\n");
-  else if (pid == 0){
-    if (execvp(command[0], command) == -1) fprintf(stderr, "Execvp failed.\n");
-  }
-  else if (pid > 0) wait(NULL);
+  // pid_t pid = fork();
+
+  // if (pid < 0) fprintf(stderr, "Fork failed.\n");
+  // else if (pid == 0){
+  //   if (execvp(command[0], command) == -1) fprintf(stderr, "Command not found.\n");
+  // }
+  // else if (pid > 0) wait(NULL);
 }
 
 // TODO is this shit really parallel???
@@ -76,11 +92,43 @@ void executeParallel(char **commands) {
     if (pid < 0) fprintf(stderr, "Fork failed.\n");
     else if (pid == 0){
       char *args[general_count];
-      removeNewLine(commands[i]);
       splitCommandIntoArgs(commands[i], args);
-      if (execvp(args[0], args) == -1) fprintf(stderr, "Execvp failed.\n");
+      if (execvp(args[0], args) == -1) fprintf(stderr, "Command not found.\n");
     }
-    else if (pid > 0) wait(NULL);
+    else if (pid > 0) {
+      wait(NULL);
+    }
+  }
+}
+
+void getAndRunBatchInput(char **argv) {
+  FILE* batch_file;
+  batch_file = fopen(argv[1], "r");
+  char c;
+  int count = 0;
+  
+  char buffer[MAX_LINE];
+  char *comms[MAX_LINE/2 + 1];
+
+  while (c != EOF) {
+    c = fgetc(batch_file);
+    buffer[count] = c;
+    count ++;
+  }
+
+  splitBatchInputIntoComms(buffer, comms);
+
+  if (style == 0) {
+    for (int i = 0; i < general_count; i++) {
+      char *args[MAX_LINE / 2 + 1];
+      removeNewLine(comms[i]);
+      splitCommandIntoArgs(comms[i], args);
+      executeSequential(args);
+      // printf("%s\n", args[1]);
+    }
+  }
+  else if (style == 1) {
+    executeParallel(comms);
   }
 }
 
@@ -92,12 +140,12 @@ int main(int argc, char *argv[])
 	int should_run = 1;
 
 	while (should_run) {
+    fflush(stdout);
 
     // INTERACTIVE
     if (argc == 1) {
       if (style == 0) printf("lhcc seq> ");
       if (style == 1) printf("lhcc par> ");
-      fflush(stdout);
 
       fgets(input, MAX_LINE, stdin);
 
@@ -121,19 +169,7 @@ int main(int argc, char *argv[])
       }
     }
     else if (argc > 1) {
-      FILE* batch_file;
-      batch_file = fopen(argv[1], "r");
-      char c;
-      int count = 0;
-
-      char buffer[MAX_LINE];
-      do {
-        c = fgetc(batch_file);
-        buffer[count] = c;
-        count ++;
-      } while (c != EOF);
-
-      printf("%s\n", buffer);
+      getAndRunBatchInput(argv);
       should_run = 0;
     }
 
