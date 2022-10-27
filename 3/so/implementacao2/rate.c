@@ -5,7 +5,7 @@
 #define NP 2
 
 typedef struct process_st {
-  char *name;
+  char name[10];
   int period;
   int burst;
   int remaining_burst;
@@ -13,20 +13,20 @@ typedef struct process_st {
   struct process_st *next;
 } process_st;
 
-void freeAll(process_st *first) {
-  process_st *curr = first;
+void freeAll(process_st *head) {
+  process_st *curr = head;
   process_st *next;
   while (curr != NULL) {
     next = curr->next;
     free(curr);
     curr = next;
   }
-  free(curr);
+  // free(curr);
   free(next);
 }
 
-void insertNewNode(process_st head, int burst, int period, char *name) {
-  process_st *curr;
+void insertNewNode(process_st *head, int burst, int period, char *name) {
+  process_st *curr = head;
   process_st *new = (process_st *) malloc(sizeof(process_st));
   for (curr = head; curr->next != NULL; curr = curr->next);
   curr->next = new;
@@ -34,6 +34,14 @@ void insertNewNode(process_st head, int burst, int period, char *name) {
   new->period = period;
   strcpy(new->name, name);
   new->next = NULL;
+}
+
+void printLinkedList(process_st *head) {
+  process_st *curr;
+  for (curr = head->next; curr != NULL; curr = curr->next) {
+    printf("%s %d %d\n", curr->name, curr->period, curr->burst);
+  }
+  printf("==========\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -46,17 +54,12 @@ int main(int argc, char *argv[]) {
   head->next = NULL;
 
   // mock process 0
-  process_st process_t0;
-  strcpy(process_t0.name, "t0");
-  process_t0.period = 50;
-  process_t0.burst = 25;
+  insertNewNode(head, 25, 50, "t0");
 
   // mock process 1
-  process_st process_t1;
-  strcpy(process_t1.name, "t1");
-  process_t1.period = 80;
-  process_t1.burst = 35;
+  insertNewNode(head, 35, 80, "t1");
 
+  printLinkedList(head);
 
   int processes_finished[NP];  // each index representes a process
   int processes_lost[NP]; 
@@ -71,7 +74,7 @@ int main(int argc, char *argv[]) {
     elapsed_time++;
   }
 
-  freeAll(head);
+  // freeAll(head);
 
   return 0;
 }
