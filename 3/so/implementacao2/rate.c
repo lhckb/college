@@ -42,7 +42,7 @@ void insertProcessToList(process_st *processes, process_st process) {
   new_process.burst = process.burst;
   new_process.period = process.period;
   strcpy(new_process.name, process.name);
-  new_process.remaining_burst = process.remaining_burst;
+  new_process.remaining_burst = process.burst + 1;
   processes[num_processes] = new_process;
   num_processes++;
   sortByPriority(processes);
@@ -50,7 +50,7 @@ void insertProcessToList(process_st *processes, process_st process) {
 
 void printList(process_st *processes) {
   for (int i = 0; i < num_processes; i++) {
-    printf("%s %d %d\n", processes[i].name, processes[i].period, processes[i].burst);
+    printf("%s %d %d %d\n", processes[i].name, processes[i].period, processes[i].burst, processes[i].remaining_burst);
   }
   printf("==========\n\n");
 }
@@ -98,6 +98,7 @@ int main(int argc, char *argv[]) {
   int total_time = 165;
 
   process_st processes[NP];
+  // process_st preempted[NP];
   log_st logs[NP];
 
   // mock processes
@@ -105,14 +106,14 @@ int main(int argc, char *argv[]) {
   mock_process1.burst = 25;
   mock_process1.period = 50;
   strcpy(mock_process1.name, "t1");
-  mock_process1.remaining_burst = mock_process1.burst;
+  mock_process1.remaining_burst = mock_process1.burst + 1;
   insertProcessToList(processes, mock_process1);
 
   process_st mock_process2;
   mock_process2.burst = 35;
   mock_process2.period = 80;
   strcpy(mock_process2.name, "t2");
-  mock_process2.remaining_burst = mock_process2.burst;
+  mock_process2.remaining_burst = mock_process2.burst + 1;
   insertProcessToList(processes, mock_process2);
 
   // process_st mock_process3;
@@ -132,7 +133,7 @@ int main(int argc, char *argv[]) {
   int log_index = 0;
 
   process_st running;
-
+  // && exec_index < num_processes
   while (elapsed_time <= total_time && exec_index < num_processes) {
     // if (exec_index < num_processes ) {
     //   process_st idle;
@@ -143,11 +144,7 @@ int main(int argc, char *argv[]) {
     // }
     running = processes[exec_index];
 
-    if (elapsed_time == total_time) {
-
-    }
-
-    if (interval >= processes[exec_index].burst) {
+    if (interval >= processes[exec_index].burst || processes[exec_index].remaining_burst == 0) {
       processes[exec_index].status = 'F';  // Finished
       last_finished_index = exec_index;
       processes[exec_index].remaining_burst = processes[exec_index].burst - interval;
@@ -187,7 +184,7 @@ int main(int argc, char *argv[]) {
     elapsed_time++;
   }
 
-  killRemainingProcesses(processes, last_finished_index, logs, log_index, interval);
+  // killRemainingProcesses(processes, last_finished_index, logs, log_index, interval);
 
   printf("EXECUTION BY RATE\n");
   printLogs(logs, log_index);
