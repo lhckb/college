@@ -5,6 +5,7 @@
 #define NP 1000
 
 int num_processes = 0;
+int exec_index = 0;
 
 typedef struct process_st {
   char name[10];
@@ -22,14 +23,14 @@ typedef struct log_st {
 
 void swapProcesses(process_st *processes, int pos1) {
   process_st temp = processes[pos1];
-  processes[pos1] = processes[pos1 + 1];
-  processes[pos1 + 1] = temp;
+  processes[pos1] = processes[pos1 - 1];
+  processes[pos1 - 1] = temp;
 }
 
 void sortByPriority(process_st *processes) {
-  for (int i = 0; i < num_processes; i++) {
-    for (int j = 0; j < num_processes - 1; j++) {
-      if (processes[j].period > processes[j + 1].period) {
+  for (int i = num_processes - 1; i >= exec_index; i--) {
+    for (int j = num_processes - 1; j > exec_index; j--) {
+      if (processes[j - 1].period > processes[j].period) {
         swapProcesses(processes, j);
       }
     }
@@ -73,7 +74,20 @@ void logProcessState(log_st *logs, process_st process, int log_index, int interv
 
 void printLogs(log_st *logs, int log_index) {
   for (int i = 0; i < log_index; i ++) {
-    printf("[%s] for %d units - %c\n", logs[i].name, logs[i].runtime, logs[i].status);
+    if (!strcmp(logs[i].name, "IDLE")) {
+      printf("idle for %d units\n", logs[i].runtime);
+    }
+    else {
+      printf("[%s] for %d units - %c\n", logs[i].name, logs[i].runtime, logs[i].status);
+    }
+  }
+}
+
+void killRemainingProcesses(process_st *processes, int exec_index, log_st *logs, int log_index, int interval) {
+  for (int i = exec_index; i < num_processes; i++) {
+
+    processes[i].status = 'K';  // Killed
+    logProcessState(logs, processes[i], log_index, interval);
   }
 }
 
@@ -113,16 +127,29 @@ int main(int argc, char *argv[]) {
   int elapsed_time = 0;
   int interval = 0;
 
-  int exec_index = 0;
+  int last_finished_index;
+
   int log_index = 0;
 
   process_st running;
 
-  while (elapsed_time < total_time && exec_index < num_processes) {
+  while (elapsed_time <= total_time && exec_index < num_processes) {
+    // if (exec_index < num_processes ) {
+    //   process_st idle;
+    //   strcpy(idle.name, "IDLE");
+    //   logProcessState(logs, idle, log_index, interval);
+    //   interval = 0;
+
+    // }
     running = processes[exec_index];
+
+    if (elapsed_time == total_time) {
+
+    }
 
     if (interval >= processes[exec_index].burst) {
       processes[exec_index].status = 'F';  // Finished
+      last_finished_index = exec_index;
       processes[exec_index].remaining_burst = processes[exec_index].burst - interval;
       logProcessState(logs, processes[exec_index], log_index, interval);
       log_index++;
@@ -148,16 +175,19 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    processes[exec_index].status = 'R';  // Running
-    
-    interval++;
 
+    processes[exec_index].status = 'R';  // Running
+    processes[exec_index].remaining_burst--;
+    
+    printf("momento: %d\n", elapsed_time);
+    printf("index: %d\n", exec_index);
+    printList(processes);
+
+    interval++;
     elapsed_time++;
   }
 
-  for (int i = exec_index; i < num_processes; i++) {
-    // printf("%s %d %c", );
-  }
+  killRemainingProcesses(processes, last_finished_index, logs, log_index, interval);
 
   printf("EXECUTION BY RATE\n");
   printLogs(logs, log_index);
