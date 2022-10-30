@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
     // }
     running = processes[exec_index];
 
-    if (interval >= processes[exec_index].burst || processes[exec_index].remaining_burst == 0) {
+    if (processes[exec_index].remaining_burst == 0) {  // processes[exec_index].remaining_burst == 0 || interval >= processes[exec_index].burst
       processes[exec_index].status = 'F';  // Finished
       last_finished_index = exec_index;
       processes[exec_index].remaining_burst = processes[exec_index].burst - interval;
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
       interval = 0;
       exec_index++;
     }
-    if (elapsed_time > 0 && checkAndInsertIncomingProcess(processes, elapsed_time)) {
+    else if (elapsed_time > 0 && checkAndInsertIncomingProcess(processes, elapsed_time)) {
 
       if (running.period > processes[exec_index].period) {
         running.status = 'H';  // Halted
@@ -171,17 +171,17 @@ int main(int argc, char *argv[]) {
         interval = 0;
       }
     }
+    else {
+      processes[exec_index].status = 'R';  // Running
+      processes[exec_index].remaining_burst--;
+      
+      printf("momento: %d\n", elapsed_time);
+      printf("index: %d\n", exec_index);
+      printList(processes);
 
-
-    processes[exec_index].status = 'R';  // Running
-    processes[exec_index].remaining_burst--;
-    
-    printf("momento: %d\n", elapsed_time);
-    printf("index: %d\n", exec_index);
-    printList(processes);
-
-    interval++;
-    elapsed_time++;
+      interval++;
+      elapsed_time++;
+    }
   }
 
   // killRemainingProcesses(processes, last_finished_index, logs, log_index, interval);
