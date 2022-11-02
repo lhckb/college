@@ -28,7 +28,7 @@ void getInputFile(FILE *input) {
 }
 
 void logProcess(process_st process, log_st *logs, int interval) {
-  printf("LOGGING... %s %d %c\n", process.name, interval, process.status);
+  // printf("LOGGING... %s %d %c\n", process.name, interval, process.status);
   strcpy(logs[log_index].proc_name, process.name);
   logs[log_index].status = process.status;
   logs[log_index].units = interval;
@@ -125,7 +125,7 @@ int checkAndInsert(process_st *first_come, process_st *processes, int time) {
     }
   }
   if (process_did_arrive > 0) {
-    printf("PROCESS DID ARRIVE: %d\n", process_did_arrive);
+    // printf("PROCESS DID ARRIVE: %d\n", process_did_arrive);
     num_processes += process_did_arrive;
     sortProcessesByPriority(processes);
     return 1;
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
   // ===============================
 
   sortProcessesByPriority(processes);
-  printList(processes);
+  // printList(processes);
 
   int is_running = 1;
   int elapsed_time = 0;
@@ -205,10 +205,10 @@ int main(int argc, char **argv) {
           running = &processes[exec_index];
           interval = 0;
         }
-        else if (checked == 0) {  // new process arrives elapsed_time > 0 && checkAndInsert(first_come, processes, elapsed_time)
+        else if (checked == 0) {  // this variable fixes a bug that causes an incoming process to be inserted twice after coming back from idle state
           process_st copy = *running;
           if (elapsed_time > 0 && checkAndInsert(first_come, processes, elapsed_time)) {
-            printf("NEW PROCESS ARRIVED!\n");
+            // printf("NEW PROCESS ARRIVED!\n");
             running->status = 'H';
             copy.status = 'H';
             if (!strcmp(running->name, processes[exec_index + 1].name) && processes[exec_index + 1].elapsed_burst == 0) {
@@ -241,13 +241,13 @@ int main(int argc, char **argv) {
         logProcess(*running, logs, interval);
       }
 
-      printf("time: %d\n", elapsed_time);
-      printf("interval: %d\n", interval);
-      printList(processes);
+      // printf("time: %d\n", elapsed_time);
+      // printf("interval: %d\n", interval);
+      // printList(processes);
     }
     else {
       int response = checkAndInsert(first_come, processes, elapsed_time);
-      printf("time: %d\n", elapsed_time);
+      // printf("time: %d\n", elapsed_time);
       if (response) {
         checked = 1;
         is_running = 1;
@@ -263,9 +263,8 @@ int main(int argc, char **argv) {
     }
   }
 
-  // killRemainingProcesses(processes);
-  printf("FINAL\n");
-  printList(processes);
+  // printf("FINAL\n");
+  // printList(processes);
 
   printf("EXECUTION BY RATE\n");
   printLogs(logs, first_come, processes);
