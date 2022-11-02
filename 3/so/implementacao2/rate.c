@@ -23,6 +23,10 @@ int num_processes = 0;
 int exec_index = 0;
 int log_index = 0;
 
+void getInputFile(FILE *input) {
+  
+}
+
 void logProcess(process_st process, log_st *logs, int interval) {
   printf("LOGGING... %s %d %c\n", process.name, interval, process.status);
   strcpy(logs[log_index].proc_name, process.name);
@@ -138,6 +142,16 @@ void killRemainingProcesses(process_st *processes) {
 }
 
 int main(int argc, char **argv) {
+  if (argc > 2) {
+    fprintf(stderr, "Wrong number of arguments passed to ./rate [file name]. Expected 1 received %d\n", argc - 1);
+    return 1;
+  }
+  FILE *file = fopen(argv[1], "r");
+  if (file = NULL) {
+    fprintf(stderr, "File '%s' not found.", argv[1]);
+    return 1;
+  }
+
   // ===============================
   process_st first_come[NP];
   process_st processes[NP];
