@@ -315,7 +315,7 @@ int main(int argc, char **argv) {
     }
     else {
       int response = checkAndInsert(NULL, first_come, processes, elapsed_time, count, interval, logs);
-      // printf("time: %d\n", elapsed_time);
+      printf("time: %d\n", elapsed_time);
       if (response) {
         checked = 1;
         is_running = 1;
