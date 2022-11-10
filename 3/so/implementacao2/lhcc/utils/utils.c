@@ -35,6 +35,10 @@ void createProcess(char *line, process_st *first_come, process_st *processes) {
       index++;
     }
     else {
+      if (index != 3) {
+        fprintf(stderr, "File format not as specified.\n");
+        exit(EXIT_FAILURE);
+      }
       true = 0;
     }
   }
@@ -72,6 +76,10 @@ int getProcessCount(FILE *input) {
   int count = -1;  // starts on -1 to account for cpu time which is the first line
 
   while (getline(&buffer, &length, input) != -1) {
+    if (!strcmp(buffer, "\n")) {
+        fprintf(stderr, "File format not as specified.\n");
+        exit(EXIT_FAILURE);
+    }
     count ++;
   }
 
