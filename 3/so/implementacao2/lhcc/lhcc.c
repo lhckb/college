@@ -10,6 +10,8 @@ int total_time = 0;
 int is_running = 1;
 int interval = 0;
 
+process_st *running;
+
 int main(int argc, char **argv) {
   if (argc > 2) {
     fprintf(stderr, "Wrong number of arguments passed to ./rate [file name]. Expected 1 received %d\n", argc - 1);
@@ -40,7 +42,7 @@ int main(int argc, char **argv) {
       is_running = 0;
     }
     if (is_running) {
-      process_st *running = &processes[exec_index];
+      running = &processes[exec_index];
 
       if (running->elapsed_burst < running->burst) {
         if (checked == 0 && elapsed_time > 0) {  // this variable fixes a logic hole that causes an incoming process to be inserted twice after coming back from idle state
@@ -72,6 +74,10 @@ int main(int argc, char **argv) {
         running->status = 'F';
         logProcess(*running, logs, interval);
       }
+
+      printf("index: %d\n", exec_index);
+      printList(processes);
+
     }
     else {
       int response = checkAndInsert(NULL, first_come, processes, elapsed_time, count, logs);
@@ -89,6 +95,8 @@ int main(int argc, char **argv) {
         interval++;
       }
     }
+
+    printf("time: %d\n", elapsed_time);
   }
 
   printLogs(logs, first_come, processes, count);

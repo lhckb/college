@@ -27,5 +27,6 @@ void sortProcessesByPriority(process_st *);
 void printList(process_st *);
 int checkInstanceOfSame(process_st, process_st *, log_st *);
 int checkAndInsert(process_st *, process_st *, process_st *, int, int, log_st *);
+void printList(process_st *);
 
 #endif

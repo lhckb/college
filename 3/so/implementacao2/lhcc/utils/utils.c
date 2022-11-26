@@ -87,6 +87,7 @@ int getProcessCount(FILE *input) {
 }
 
 void logProcess(process_st process, log_st *logs, int interval) {
+  printf("LOGGING... %s - %d - %c\n", process.name, interval, process.status);
   strcpy(logs[log_index].proc_name, process.name);
   logs[log_index].status = process.status;
   logs[log_index].units = interval;
@@ -216,4 +217,10 @@ int checkAndInsert(process_st *running, process_st *first_come, process_st *proc
     return 1;
   }
   return 0;
+}
+
+void printList(process_st *processes) {
+  for (int i = 0; i < num_processes; i++) {
+    printf("%s %d %d %c\n", processes[i].name, processes[i].burst, processes[i].elapsed_burst, processes[i].status);
+  }
 }
