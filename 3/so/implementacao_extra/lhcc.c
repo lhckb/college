@@ -15,7 +15,6 @@ int main(int argc, char *argv[]) {
 
   max = atoi(argv[1]);
 
-
   hole_st holes[max / 2 + 1];
   process_st memory[max];
   initMemory(memory);
@@ -29,11 +28,11 @@ int main(int argc, char *argv[]) {
 
   FILE *output = fopen("memory_lhcc.out", "w");
   if (output == NULL) {
-    fprintf(stderr, "Could not print to output file.\n");
+    fprintf(stderr, "Could not create output file.\n");
     exit(EXIT_FAILURE);
   }
 
-  fprintf(output, "Total memory %d\n", max);
+  fprintf(output, "Total Memory %d\n", max);
   readInputFile(input, memory, holes, output);
 
   fclose(output);

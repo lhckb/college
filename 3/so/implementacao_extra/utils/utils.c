@@ -50,12 +50,10 @@ void updateHoleArray(hole_st *holes, process_st* memory) {
 void initMemory(process_st *memory) {
   for (int i = 0; i < max; i++) {
     memory[i] = null_space;
-    // printf("Memory address %d of name %s\n", i, memory[i].name);
   }
 }
 
 void printMemoryStatus(process_st *memory, FILE *output) {
-  
   for (int i = 0; i < max; ) {
     if (isNullSpace(memory, i)) {
       int start_position = i;
@@ -83,7 +81,6 @@ void printMemoryStatus(process_st *memory, FILE *output) {
 }
 
 void releaseMemorySpace(char *command[4], process_st *memory, hole_st *holes, FILE *output) {
-  
   char process_name[BIG_NUM];
   strcpy(process_name, command[1]);
   int valid = 0;
@@ -96,7 +93,6 @@ void releaseMemorySpace(char *command[4], process_st *memory, hole_st *holes, FI
   }
 
   updateHoleArray(holes, memory);
-  // printHoleArray(holes);
 
   if (!valid) {
     fprintf(output, "Fail to release %s\n", process_name);
@@ -108,7 +104,6 @@ void releaseMemorySpace(char *command[4], process_st *memory, hole_st *holes, FI
 }
 
 void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-  
   int requested = atoi(command[2]);
   hole_st best_hole = holes[0];
   int valid = 0;
@@ -127,7 +122,6 @@ void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE
     }
     fprintf(output, "Allocate %s to %s with Worst Fit\n", command[2], command[1]);
     updateHoleArray(holes, memory);
-    // printHoleArray(holes);
   }
   else {
     fprintf(output, "The request of %s fail\n", command[1]);
@@ -136,7 +130,6 @@ void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE
 }
 
 void allocateFirstFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-
   int requested = atoi(command[2]);
   int count;
   int start_index;
@@ -156,47 +149,37 @@ void allocateFirstFit(process_st* memory, char *command[4], hole_st *holes, FILE
           strcpy(memory[k].name, command[1]);
           memory[k].start_idx = start_index;
           memory[k].requested = requested;
-          // fprintf(stdout, "Address %d is now occupied by %s\n", k, memory[k].name);
         }
         i = max;
         fprintf(output, "Allocate %s to %s with First Fit\n", command[2], command[1]);
         updateHoleArray(holes, memory);
-        // printHoleArray(holes);
       }
       else {
+        i = max;
         fprintf(output, "The request of %s fail\n", command[1]);
       }
     }
-
     i++;
   }
-  
 }
 
 void allocateBestFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-  
   int requested = atoi(command[2]);
   hole_st best_hole;
   for (int i = 0; i < hole_index; i++) {  // first find a hole big enough to fit so can be used as parameter
-    // fprintf(stdout, "Candidate hole starts at %d\n", holes[i].start_position);
-    // printf("AAAAAAAAAAAAAAAAAAAAAAAA\n");
     if (holes[i].size >= requested) {
       best_hole = holes[i];
       i = hole_index;
     }
   }
 
-  fprintf(stdout, "Best hole starts at %d\n", best_hole.start_position);
-
   int valid = 0;
-  for (int i = 1; i < hole_index; i++) {
+  for (int i = 1; i < hole_index; i++) {  // make sure to capture if another hole is more ideal
     if (holes[i].size < best_hole.size && holes[i].size >= requested) {
       best_hole = holes[i];
       valid = 1;
     }
   }
-
-  fprintf(stdout, "Best hole starts at %d\n", best_hole.start_position);
 
   if (valid || best_hole.size >= requested) {  // allocate if true
     for (int i = best_hole.start_position; i < requested + best_hole.start_position; i++) {
@@ -206,7 +189,6 @@ void allocateBestFit(process_st* memory, char *command[4], hole_st *holes, FILE 
     }
     fprintf(output, "Allocate %s to %s with Best Fit\n", command[2], command[1]);
     updateHoleArray(holes, memory);
-    // printHoleArray(holes);
   }
   else {
     fprintf(output, "The request of %s fail\n", command[1]);
@@ -215,7 +197,6 @@ void allocateBestFit(process_st* memory, char *command[4], hole_st *holes, FILE 
 }
 
 void compactMemory(process_st *memory, hole_st *holes, FILE *output) {
-  
   process_st processes[max];
   int idx = 0;
   for (int i = 0; i < max;) {
@@ -232,7 +213,6 @@ void compactMemory(process_st *memory, hole_st *holes, FILE *output) {
   int idx_2 = 0;
   for (int i = 0; i < max; i++) {
     while (idx_2 < idx) {
-      // printf("Process %s with %d requested\n", processes[idx_2].name, processes[idx_2].requested);
       for (int j = 0; j < processes[idx_2].requested; j++) {
         memory[i] = processes[idx_2];
         i++;
@@ -243,16 +223,10 @@ void compactMemory(process_st *memory, hole_st *holes, FILE *output) {
   }
 
   fprintf(output, "Compact Memory\n");
-  
 }
 
 void executeCommand(char *command[4], process_st* memory, hole_st *holes, FILE *output) {
-  
-  //fprintf(stdout, "%s\n", command[0]);
-
-  // printHoleArray(holes);
   if (!strcmp(command[0], "X")) {
-    // updateHoleArray(holes, memory);
     fprintf(output, "Exit");
     exit(EXIT_SUCCESS);
   }
@@ -265,8 +239,6 @@ void executeCommand(char *command[4], process_st* memory, hole_st *holes, FILE *
     if (!strcmp(command[3], "W")) { allocateWorstFit(memory, command, holes, output); }
     if (!strcmp(command[3], "F")) { allocateFirstFit(memory, command, holes, output); }
     if (!strcmp(command[3], "B")) { allocateBestFit(memory, command, holes, output); }
-    // updateHoleArray(holes, memory);
-    // printHoleArray(holes);
   }
 
   if (!strcmp(command[0], "RL")) {
@@ -274,7 +246,6 @@ void executeCommand(char *command[4], process_st* memory, hole_st *holes, FILE *
   }
 
   if (!strcmp(command[0], "C")) {
-    // fprintf(stdout, "Compaction happening\n");
     compactMemory(memory, holes, output);
   }
   
@@ -294,7 +265,6 @@ void readInputFile(FILE *input, process_st *memory, hole_st *holes, FILE *output
     while (true) {
       slice = strtok_r(buffer, " ", &buffer);
       if (slice != NULL) {
-        // fprintf(stdout, "%s\n", slice);
         args[index] = slice;
         index++;
       }
