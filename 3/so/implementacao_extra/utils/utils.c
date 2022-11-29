@@ -104,7 +104,7 @@ void releaseMemorySpace(char *command[4], process_st *memory, hole_st *holes, FI
 }
 
 void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-  int requested = atoi(command[2]);
+  long int requested = atoi(command[2]);
   hole_st best_hole = holes[0];
   int valid = 0;
   for (int i = 1; i < hole_index; i++) {
@@ -114,7 +114,8 @@ void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE
     }
   }
 
-  if (valid || best_hole.size >= requested) {  // allocate if true
+  // fprintf(stdout, "best hole size: %d; best hole starts at %d\n", best_hole.size, best_hole.start_position);
+  if (best_hole.size >= requested && (best_hole.start_position + best_hole.size) <= max) {  // allocate if true
     for (int i = best_hole.start_position; i < requested + best_hole.start_position; i++) {
       strcpy(memory[i].name, command[1]);
       memory[i].requested = requested;
@@ -130,7 +131,7 @@ void allocateWorstFit(process_st* memory, char *command[4], hole_st *holes, FILE
 }
 
 void allocateFirstFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-  int requested = atoi(command[2]);
+  long int requested = atoi(command[2]);
   int count;
   int start_index;
 
@@ -164,7 +165,7 @@ void allocateFirstFit(process_st* memory, char *command[4], hole_st *holes, FILE
 }
 
 void allocateBestFit(process_st* memory, char *command[4], hole_st *holes, FILE *output) {
-  int requested = atoi(command[2]);
+  long int requested = atoi(command[2]);
   hole_st best_hole;
   for (int i = 0; i < hole_index; i++) {  // first find a hole big enough to fit so can be used as parameter
     if (holes[i].size >= requested) {
@@ -221,7 +222,8 @@ void compactMemory(process_st *memory, hole_st *holes, FILE *output) {
     }
     memory[i] = null_space;
   }
-
+  
+  updateHoleArray(holes, memory);
   fprintf(output, "Compact Memory\n");
 }
 
@@ -248,7 +250,8 @@ void executeCommand(char *command[4], process_st* memory, hole_st *holes, FILE *
   if (!strcmp(command[0], "C")) {
     compactMemory(memory, holes, output);
   }
-  
+
+  updateHoleArray(holes, memory);
 }
 
 void readInputFile(FILE *input, process_st *memory, hole_st *holes, FILE *output) {
@@ -264,6 +267,7 @@ void readInputFile(FILE *input, process_st *memory, hole_st *holes, FILE *output
     true = 1;
     while (true) {
       slice = strtok_r(buffer, " ", &buffer);
+        // fprintf(stdout, "%s\n", slice);
       if (slice != NULL) {
         args[index] = slice;
         index++;
