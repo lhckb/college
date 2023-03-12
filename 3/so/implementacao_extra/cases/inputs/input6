@@ -1,0 +1,16 @@
+RL T1
+RQ A 45 F
+RQ B 30 W
+RQ C 10 B
+RQ D 15 F
+STAT
+RL C
+RQ D 9 F
+STAT
+RQ E 9 W
+RL B
+STAT
+C
+asdsad
+STAT
+X
