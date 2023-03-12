@@ -2,32 +2,54 @@
 Feature: calculadora de números inteiros
   # Enter feature description here
 
-  Scenario: somar dois números
-    Given o primeiro operador é 3
-    And o segundo operador é 2
+  Scenario Outline: somar dois números
+    Given o primeiro operador é <operador1>
+    And o segundo operador é <operador2>
     When eu somar os dois operadores
-    Then o resultado deve ser 5
+    Then o resultado deve ser <resultado>
 
-  Scenario: subtrair dois números
-    Given o primeiro operador é 9
-    And o segundo operador é 8
+    Examples:
+    |operador1 |operador2 | resultado|
+    |4         | 5        | 9        |
+    |28        | 2        | 30       |
+
+  Scenario Outline: subtrair dois números
+    Given o primeiro operador é <operador1>
+    And o segundo operador é <operador2>
     When eu subtrair os dois operadores
-    Then o resultado deve ser 1
+    Then o resultado deve ser <resultado>
 
-  Scenario: dividir dois números
-    Given o primeiro operador é 36
-    And o segundo operador é 6
+    Examples:
+    |operador1 |operador2 | resultado|
+    |10        | 8        | 2        |
+    |100       | 78       | 22       |
+
+  Scenario Outline: dividir dois números
+    Given o primeiro operador é <operador1>
+    And o segundo operador é <operador2>
     When eu dividir os dois operadores
-    Then o resultado deve ser 6
+    Then o resultado deve ser <resultado>
 
-  Scenario: multiplicar dois números
-    Given o primeiro operador é 19
-    And o segundo operador é 9
+    Examples:
+    |operador1 |operador2 | resultado|
+    |5         | 5        | 1        |
+
+  Scenario Outline: multiplicar dois números
+    Given o primeiro operador é <operador1>
+    And o segundo operador é <operador2>
     When eu multiplicar os dois operadores
-    Then o resultado deve ser 171
+    Then o resultado deve ser <resultado>
 
-  Scenario: potenciar dois números
-    Given o primeiro operador é 2
-    And o segundo operador é 15
+    Examples:
+    |operador1 |operador2 | resultado|
+    |10         | 5       | 50        |
+
+  Scenario Outline: potenciar dois números
+    Given o primeiro operador é <operador1>
+    And o segundo operador é <operador2>
     When eu potenciar os dois operadores
-    Then o resultado deve ser 32768
+    Then o resultado deve ser <resultado>
+
+    Examples:
+    |operador1 |operador2 | resultado|
+    |2         | 15       | 32768    |
